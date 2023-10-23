@@ -76,26 +76,26 @@ def jos_malo_generatora():
 """
 
 
-@asyncio.coroutine
-def countdown(number, n):
-    """
-        Asinhroni brojac unazad.
-    """
-    while n > 0:
-        print('T-minus', n, '({})'.format(number))
-        yield from asyncio.sleep(1)
-        n -= 1
+# @asyncio.coroutine
+# def countdown(number, n):
+#     """
+#         Asinhroni brojac unazad.
+#     """
+#     while n > 0:
+#         print('T-minus', n, '({})'.format(number))
+#         yield from asyncio.sleep(1)
+#         n -= 1
 
 
-def dva_asinhrona_brojaca():
-    # pokretanje asinhronog koda podrazumeva startovanje event-loopa
-    # nakon cega se specificraju zadaci koji treba da se izvrse
-    loop = asyncio.get_event_loop()
-    tasks = [
-        asyncio.ensure_future(countdown("A", 2)),
-        asyncio.ensure_future(countdown("B", 3))]
-    loop.run_until_complete(asyncio.wait(tasks))
-    loop.close()
+# def dva_asinhrona_brojaca():
+#     # pokretanje asinhronog koda podrazumeva startovanje event-loopa
+#     # nakon cega se specificraju zadaci koji treba da se izvrse
+#     loop = asyncio.get_event_loop()
+#     tasks = [
+#         asyncio.ensure_future(countdown("A", 2)),
+#         asyncio.ensure_future(countdown("B", 3))]
+#     loop.run_until_complete(asyncio.wait(tasks))
+#     loop.close()
 
 
 """

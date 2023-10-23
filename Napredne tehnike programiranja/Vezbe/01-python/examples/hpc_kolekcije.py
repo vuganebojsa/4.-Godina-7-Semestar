@@ -41,7 +41,7 @@ def counter_primer():
     lista = [1, 2, 3, '1', '2', '3', 1, 2, 3, '1', '2', '3', 1, 2, 3]
     prebroj_elemente_list = Counter(lista)
     print(prebroj_elemente_list)
-    print(prebroj_elemente_list.most_common(3))
+    print(list(map(lambda x: x[0], prebroj_elemente_list.most_common(3))))
 
 
 # 5.3 defaultdict - mozemo da specificiramo podrazumevanu vrednost ako se pristupi nepostojecem kljucu
