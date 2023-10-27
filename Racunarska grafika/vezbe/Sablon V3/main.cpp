@@ -54,17 +54,33 @@ int main(void)
     {
         //Pozicija    |    Boja
         //X    Y       R    G    B    A
-        -0.25, 0.0,    1.0, 0.0, 0.0, 0.0,  //tjeme 0
-        0.25, 0.0,     0.0, 1.0, 0.0, 0.0,  //tjeme 1
-        -0.25, 0.25,    0.0, 0.0, 1.0, 0.0,  //tjeme 2
-        0.25, 0.25,    1.0, 1.0, 0.0, 0.0,   //tjeme 3
+        -1.0, 1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 0
+        0.0, 1.0,     1.0, 1.0, 1.0, 0.0,  //tjeme 1
+        0.0, 0.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
+        -1.0, 0.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
+
+        -1.0, 0.0,    1.0, 0.0, 0.0, 0.0,  //tjeme 0
+        0.0, 0.0,     1.0, 0.0, 0.0, 0.0,  //tjeme 1
+        0.0, -1.0,    1.0, 0.0, 0.0, 0.0,  //tjeme 2
+        -1.0, -1.0,    1.0, 0.0, 0.0, 0.0,  //tjeme 2
+
+        0.0, 1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 0
+        1.0, 1.0,     1.0, 1.0, 1.0, 0.0,  //tjeme 1
+        1.0, -1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
+        0.0, -1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
     };
     unsigned int stride = (2 + 4) * sizeof(float);
 
     unsigned int indices[] = // Indeksi tjemena
     {
         0, 1, 2, //Prvi trougao sacinjen od tjemena 0, tjemena 1 i tjemena 2 (Prednja strana mu je naprijed)
-        1, 2, 3, //Drugi trougao (Zadnja strana mu je naprijed)
+        0, 2, 3,
+
+        4, 5, 6,
+        4, 6, 7,
+
+        8, 9, 10,
+        8, 10, 11
     };
 
     //Vertex Array Object - Kontejner za VBO, EBO i pokazivace na njihove atribute i tjemena
@@ -96,8 +112,8 @@ int main(void)
     int uColLoc = glGetUniformLocation(unifiedShader, "uCol"); //Nadji adresu uniforme - obavezno NAKON sto je napravljen sejder
     //glGetUniformLocation(objedinjeni sejder, ime uniforme kako je definisana unutar sejdera) - vraca lokaciju uniforme unutar sejder programa
 
-    glClearColor(0.5, 0.5, 0.5, 1.0);
-    while (!glfwWindowShouldClose(window)) 
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f); 
+    while (!glfwWindowShouldClose(window))
     {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
@@ -106,22 +122,32 @@ int main(void)
 
         glClear(GL_COLOR_BUFFER_BIT);
 
+        if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+        {
+            glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
+        }
+        else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        {
+            // gray
+            glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        }
         // [KOD ZA CRTANJE]
         glUseProgram(unifiedShader);
         glBindVertexArray(VAO);
         //Slanje vrijednosti na uniformu NAKON sto je aktiviran sejder
-        float R = abs(sin(glfwGetTime())); //Absolutna vrijednost sinusa trenutnog vremena
-        float G = 0.25;
-        glUniform3f(uColLoc, R, G, 0); //Postavi uniformu na odredjenu vrijednost. 3f jer je uCol definisan kao vec3
+      //  float R = abs(sin(glfwGetTime())); //Absolutna vrijednost sinusa trenutnog vremena
+        //float G = 0.25;
+        //glUniform3f(uColLoc, R, G, 0); //Postavi uniformu na odredjenu vrijednost. 3f jer je uCol definisan kao vec3
         //glUniform(adresa uniforme, nova vrijednost uniforme) - Postavlja uniformu na prosledjenu vrijednost.
         //Ime zavisi od tipa uniforme (pogledati nomenklaturu sa prve prezentacije). 
 
         //Crtanje bez indeksa
         //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); //To i nacrtamo
         //glDrawArrays(tip primitive, indeks pocetnog tjemena, koliko narednih tjemena crtamo);
+        glUniform4f(uColLoc, 0.5f, 0.0f, 0.5f, 1.0f);
 
         //Crtanje sa indeksima
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(0 * sizeof(unsigned int)));
+        glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, (void*)(0 * sizeof(unsigned int)));
         //glDrawElements(Tip primitive, koliko indeksa se koristi, koji su tip indeksi, pomjeraj sa pocetka niza indeksa da bi dosli do prvog indeksa koji koristimo
 
         glfwSwapBuffers(window);
