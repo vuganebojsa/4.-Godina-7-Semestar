@@ -28,10 +28,10 @@ def load_csv_data():
 
 def get_ditto_count(img):
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-    # img_open = cv2.dilate(img, kernel, iterations=2)
-    # img_ero = cv2.erode(img_open, kernel, iterations=2)
-    # display_image(img_ero, color=True)
-    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+    img_open = cv2.dilate(img, kernel, iterations=2)
+    img_ero = cv2.erode(img_open, kernel, iterations=2)
+    #display_image(img_ero, color=True)
+    hsv = cv2.cvtColor(img_ero, cv2.COLOR_RGB2HSV)
 
     lower_purple = np.array([120, 50, 50])
     upper_purple = np.array([160, 255, 255])
@@ -39,7 +39,7 @@ def get_ditto_count(img):
 
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    min_area = 2000
+    min_area = 3000
     max_area = 130000
     filtered_contours = []
     for contour in contours:
