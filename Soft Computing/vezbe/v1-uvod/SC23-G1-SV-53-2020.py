@@ -1,41 +1,50 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
-import csv
+import sys
+
 
 def load_image(path):
     return cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB)
 
 
-def display_image(image, color=False):
-    if color:
-        plt.imshow(image)
-    else:
-        plt.imshow(image, 'gray')
+def image_hsv(img):
+    return cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
 
-def load_csv_data():
-    result = []
-    with open('ditto_count.csv') as ditto_file:
-        reader = csv.reader(ditto_file, delimiter=',')
-        first = True
-        for row in reader:
-            if first:
-                first = False
-                continue
-            result.append((row[0], row[1]))
-    return result
+
+def display_image(img, color=False):
+    if color:
+        plt.imshow(img)
+    else:
+        plt.imshow(img, 'gray')
+
+
+def get_correct_results():
+    return [
+        ('ditto_v1_notebook.jpg', 7),
+        ('ditto_v2_notebook.jpg', 6),
+        ('ditto_v3_notebook.jpg', 7),
+        ('ditto_v4_notebook.jpg', 10),
+        ('ditto_v5_notebook.jpg', 7),
+        ('ditto_v6_notebook.jpg', 1),
+        ('ditto_v7_notebook.jpg', 8),
+        ('ditto_v8_notebook.jpg', 4),
+        ('ditto_v9_notebook.jpg', 7),
+        ('ditto_v10_notebook.jpg', 9)
+
+    ]
 
 
 def get_ditto_count(img):
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
     img_open = cv2.dilate(img, kernel, iterations=2)
     img_ero = cv2.erode(img_open, kernel, iterations=2)
-    #display_image(img_ero, color=True)
-    hsv = cv2.cvtColor(img_ero, cv2.COLOR_RGB2HSV)
+    # display_image(img_ero, color=True)
+    hsv = image_hsv(img_ero)
 
-    lower_purple = np.array([120, 50, 50])
-    upper_purple = np.array([160, 255, 255])
-    mask = cv2.inRange(hsv, lower_purple, upper_purple)
+    lower_bound = np.array([120, 50, 50])
+    upper_bound = np.array([160, 255, 255])
+    mask = cv2.inRange(hsv, lower_bound, upper_bound)
 
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -55,14 +64,21 @@ def get_ditto_count(img):
 
 
 if __name__ == '__main__':
-    result = load_csv_data()
+    correct_results = get_correct_results()
     total_differences = []
-    for (file_name, value) in result:
-        img = load_image('pictures/' + file_name)
-        img = img[60:980, 284:900]
-        guess = get_ditto_count(img)
-        total_differences.append(abs(guess - int(value)))
-        print(file_name + '-' + str(value) + '-' + str(guess))
-    print('\nMean Absolute error(MAE) is: ', end='')
-    print(sum(total_differences)/ len(total_differences))
+    print('Picture Name-Correct Answer-My Answer')
+    pictures_path = 'pictures/'
+    if len(sys.argv) >= 2:
+        pictures_path = sys.argv[1]
 
+    for (file_name, value) in correct_results:
+        image = load_image(pictures_path + file_name)
+        # resizing the image so only the things in the notepad are being looked
+        image = image[60:980, 284:900]
+
+        count = get_ditto_count(image)
+        total_differences.append(abs(count - int(value)))
+        print(file_name + '-' + str(value) + '-' + str(count))
+
+    mae = sum(total_differences) / len(total_differences)
+    print('\nMean Absolute error(MAE) is: ' + str(mae))
