@@ -36,10 +36,6 @@ def get_correct_results():
 
 
 def get_ditto_count(img):
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-    img_open = cv2.dilate(img, kernel, iterations=2)
-    img_ero = cv2.erode(img_open, kernel, iterations=2)
-    # display_image(img_ero, color=True)
     hsv = image_hsv(img)
 
     lower_bound = np.array([120, 50, 50])
