@@ -40,10 +40,10 @@ def get_ditto_count(img):
     img_open = cv2.dilate(img, kernel, iterations=2)
     img_ero = cv2.erode(img_open, kernel, iterations=2)
     # display_image(img_ero, color=True)
-    hsv = image_hsv(img_ero)
+    hsv = image_hsv(img)
 
     lower_bound = np.array([120, 50, 50])
-    upper_bound = np.array([160, 255, 255])
+    upper_bound = np.array([160, 255, 253])
     mask = cv2.inRange(hsv, lower_bound, upper_bound)
 
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
