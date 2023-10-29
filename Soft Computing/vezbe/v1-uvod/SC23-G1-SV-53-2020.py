@@ -63,5 +63,6 @@ if __name__ == '__main__':
         guess = get_ditto_count(img)
         total_differences.append(abs(guess - int(value)))
         print(file_name + '-' + str(value) + '-' + str(guess))
+    print('\nMean Absolute error(MAE) is: ', end='')
     print(sum(total_differences)/ len(total_differences))
 
