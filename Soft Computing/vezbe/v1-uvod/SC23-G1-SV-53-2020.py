@@ -38,10 +38,9 @@ def get_correct_results():
 def get_ditto_count(img):
     hsv = image_hsv(img)
 
-    lower_bound = np.array([120, 50, 50])
-    upper_bound = np.array([160, 255, 253])
+    lower_bound = np.array([120, 50, 86])
+    upper_bound = np.array([135, 214, 235])
     mask = cv2.inRange(hsv, lower_bound, upper_bound)
-
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     min_area = 3000
