@@ -31,18 +31,14 @@ def get_correct_results():
         ('ditto_v8_notebook.jpg', 4),
         ('ditto_v9_notebook.jpg', 7),
         ('ditto_v10_notebook.jpg', 9)
-
     ]
 
 
-def get_ditto_count(img):
-    hsv = image_hsv(img)
+def get_mask_bounds():
+    return np.array([120, 50, 86]), np.array([135, 214, 235])
 
-    lower_bound = np.array([120, 50, 86])
-    upper_bound = np.array([135, 214, 235])
-    mask = cv2.inRange(hsv, lower_bound, upper_bound)
-    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+def get_filtered_contours(contours):
     min_area = 3000
     max_area = 130000
     filtered_contours = []
@@ -50,10 +46,25 @@ def get_ditto_count(img):
         area = cv2.contourArea(contour)
         if min_area < area < max_area:
             filtered_contours.append(contour)
+    return filtered_contours
+
+
+def get_ditto_count(img):
+    hsv = image_hsv(img)
+
+    lower_bound, upper_bound = get_mask_bounds()
+    mask = cv2.inRange(hsv, lower_bound, upper_bound)
+
+    # filter contours that fit a certain area
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    filtered_contours = get_filtered_contours(contours)
 
     total_dittos = len(filtered_contours)
-    img_cont = img.copy()
-    cv2.drawContours(img_cont, filtered_contours, -1, (255, 0, 0), 2)
+
+    # displaying the image with red contours
+    # img_cont = img.copy()
+    # cv2.drawContours(img_cont, filtered_contours, -1, (255, 0, 0), 2)
+    # display_image(img_cont)
 
     return total_dittos
 
