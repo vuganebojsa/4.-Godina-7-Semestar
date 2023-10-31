@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import sys
+import csv
 
 
 def load_image(path):
@@ -20,18 +21,14 @@ def display_image(img, color=False):
 
 
 def get_correct_results():
-    return [
-        ('ditto_v1_notebook.jpg', 7),
-        ('ditto_v2_notebook.jpg', 6),
-        ('ditto_v3_notebook.jpg', 7),
-        ('ditto_v4_notebook.jpg', 10),
-        ('ditto_v5_notebook.jpg', 7),
-        ('ditto_v6_notebook.jpg', 1),
-        ('ditto_v7_notebook.jpg', 8),
-        ('ditto_v8_notebook.jpg', 4),
-        ('ditto_v9_notebook.jpg', 7),
-        ('ditto_v10_notebook.jpg', 9)
-    ]
+    results = []
+    with open('ditto_count.csv', mode='r') as file:
+        csv_reader = csv.reader(file)
+        next(csv_reader)
+        for row in csv_reader:
+            image_name, score = row[0], int(row[1])
+            results.append((image_name, score))
+    return results
 
 
 def get_mask_bounds():
@@ -72,7 +69,7 @@ def get_ditto_count(img):
 if __name__ == '__main__':
     correct_results = get_correct_results()
     total_differences = []
-    print('Picture Name-Correct Answer-My Answer')
+    print('Picture Name - Correct Answer - My Answer')
     pictures_path = 'pictures/'
     if len(sys.argv) >= 2:
         pictures_path = sys.argv[1]
