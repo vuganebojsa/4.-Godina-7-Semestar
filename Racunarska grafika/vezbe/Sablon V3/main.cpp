@@ -54,33 +54,22 @@ int main(void)
     {
         //Pozicija    |    Boja
         //X    Y       R    G    B    A
-        -1.0, 1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 0
-        0.0, 1.0,     1.0, 1.0, 1.0, 0.0,  //tjeme 1
-        0.0, 0.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
-        -1.0, 0.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
+        -1.0, 0.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 0
+        -0.3, 0.0,     1.0, 1.0, 1.0, 0.0,  //tjeme 1
+        -0.7, 0.6,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
 
-        -1.0, 0.0,    1.0, 0.0, 0.0, 0.0,  //tjeme 0
-        0.0, 0.0,     1.0, 0.0, 0.0, 0.0,  //tjeme 1
-        0.0, -1.0,    1.0, 0.0, 0.0, 0.0,  //tjeme 2
-        -1.0, -1.0,    1.0, 0.0, 0.0, 0.0,  //tjeme 2
+        0.0, 0.0,    1.0, 0.0, 0.0, 0.0,  //tjeme 0
+        0.7, 0.0,     1.0, 0.0, 0.0, 0.0,  //tjeme 1
+        0.3, 0.6,    1.0, 0.0, 0.0, 0.0,  //tjeme 2
 
-        0.0, 1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 0
-        1.0, 1.0,     1.0, 1.0, 1.0, 0.0,  //tjeme 1
-        1.0, -1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
-        0.0, -1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
     };
     unsigned int stride = (2 + 4) * sizeof(float);
 
     unsigned int indices[] = // Indeksi tjemena
     {
         0, 1, 2, //Prvi trougao sacinjen od tjemena 0, tjemena 1 i tjemena 2 (Prednja strana mu je naprijed)
-        0, 2, 3,
+        3, 4, 5
 
-        4, 5, 6,
-        4, 6, 7,
-
-        8, 9, 10,
-        8, 10, 11
     };
 
     //Vertex Array Object - Kontejner za VBO, EBO i pokazivace na njihove atribute i tjemena
@@ -147,7 +136,7 @@ int main(void)
         glUniform4f(uColLoc, 0.5f, 0.0f, 0.5f, 1.0f);
 
         //Crtanje sa indeksima
-        glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, (void*)(0 * sizeof(unsigned int)));
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(0 * sizeof(unsigned int)));
         //glDrawElements(Tip primitive, koliko indeksa se koristi, koji su tip indeksi, pomjeraj sa pocetka niza indeksa da bi dosli do prvog indeksa koji koristimo
 
         glfwSwapBuffers(window);
