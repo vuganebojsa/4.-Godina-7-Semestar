@@ -55,12 +55,20 @@ int main(void)
         //Pozicija    |    Boja
         //X    Y       R    G    B    A
         -1.0, 0.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 0
-        -0.3, 0.0,     1.0, 1.0, 1.0, 0.0,  //tjeme 1
-        -0.7, 0.6,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
+        0.0, 0.0,     1.0, 1.0, 1.0, 0.0,  //tjeme 1
+        0.0, 1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
+        -1.0, 1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
 
-        0.0, 0.0,    1.0, 0.0, 0.0, 0.0,  //tjeme 0
-        0.7, 0.0,     1.0, 0.0, 0.0, 0.0,  //tjeme 1
-        0.3, 0.6,    1.0, 0.0, 0.0, 0.0,  //tjeme 2
+        -1.0, 0.0,    1.0, 0.0, 0.0, 0.0,  //tjeme 0
+        0.0, 0.0,     1.0, 0.0, 0.0, 0.0,  //tjeme 1
+        0.0, -1.0,    1.0, 0.0, 0.0, 0.0,  //tjeme 2
+        -1.0, -1.0,    1.0, 0.0, 0.0, 0.0,  //tjeme 2
+
+       0.0, 1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 0
+        1.0, 1.0,     1.0, 1.0, 1.0, 0.0,  //tjeme 1
+        1.0, -1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
+        0.0, -1.0,    1.0, 1.0, 1.0, 0.0,  //tjeme 2
+
 
     };
     unsigned int stride = (2 + 4) * sizeof(float);
@@ -68,34 +76,55 @@ int main(void)
     unsigned int indices[] = // Indeksi tjemena
     {
         0, 1, 2, //Prvi trougao sacinjen od tjemena 0, tjemena 1 i tjemena 2 (Prednja strana mu je naprijed)
-        3, 4, 5
+        0, 3, 2,
 
+        4, 5, 6,
+        4, 7, 6,
+
+        8, 9, 10,
+        10, 11, 8
+        
     };
 
+    float circle[30 * 2 + 4]; // +4 je za x i y koordinate centra kruga, i za x i y od nultog ugla
+    float r = 0.5; //poluprecnik
+
+    circle[0] = 0; //Centar X0
+    circle[1] = 0; //Centar Y0
+    int i;
+    for (i = 0; i <= 30; i++)
+    {
+
+        circle[2 + 2 * i] = r * cos((3.141592 / 180) * (i * 360 / 30)); //Xi
+        circle[2 + 2 * i + 1] = r * sin((3.141592 / 180) * (i * 360 / 30)); //Yi
+    }
+
     //Vertex Array Object - Kontejner za VBO, EBO i pokazivace na njihove atribute i tjemena
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO); //Generisi 1 kontejner na adresi od promjenljive "VAO"
-    glBindVertexArray(VAO); //Povezi VAO za aktivni kontekst - Sve sto radimo ispod ovoga ce se odnositi na kontejner "VAO"
+    unsigned int VAO[2];
+    glGenVertexArrays(2, VAO); //Generisi 1 kontejner na adresi od promjenljive "VAO"
+    glBindVertexArray(VAO[0]); //Povezi VAO za aktivni kontekst - Sve sto radimo ispod ovoga ce se odnositi na kontejner "VAO"
 
     //Vertex Buffer Object - Nase figure koje crtamo
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    unsigned int VBO[2];
+    glGenBuffers(2, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 + sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+
+    glBindVertexArray(VAO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(circle), circle, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
     //Element Buffer Object
     //Radimo identicne stvari kao za VBO, samo sto saljemo podatke o indeksima tjemena - na Element array buffer
-    unsigned int EBO;
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glBindVertexArray(0);
 
     unsigned int unifiedShader = createShader("basic.vert", "basic.frag");
     int uColLoc = glGetUniformLocation(unifiedShader, "uCol"); //Nadji adresu uniforme - obavezno NAKON sto je napravljen sejder
@@ -108,37 +137,16 @@ int main(void)
         {
             glfwSetWindowShouldClose(window, GL_TRUE);
         }
-
         glClear(GL_COLOR_BUFFER_BIT);
 
-        if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
-        {
-            glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
-        }
-        else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        {
-            // gray
-            glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-        }
-        // [KOD ZA CRTANJE]
-        glUseProgram(unifiedShader);
-        glBindVertexArray(VAO);
-        //Slanje vrijednosti na uniformu NAKON sto je aktiviran sejder
-      //  float R = abs(sin(glfwGetTime())); //Absolutna vrijednost sinusa trenutnog vremena
-        //float G = 0.25;
-        //glUniform3f(uColLoc, R, G, 0); //Postavi uniformu na odredjenu vrijednost. 3f jer je uCol definisan kao vec3
-        //glUniform(adresa uniforme, nova vrijednost uniforme) - Postavlja uniformu na prosledjenu vrijednost.
-        //Ime zavisi od tipa uniforme (pogledati nomenklaturu sa prve prezentacije). 
+        glBindVertexArray(VAO[0]);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
+        glViewport(wWidth / 2 + 1, 0, wWidth / 2, wHeight);  // Da crtamo na desnoj polovini ekrana
+        glBindVertexArray(VAO[1]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof(circle) / (2 * sizeof(float)));
 
-        //Crtanje bez indeksa
-        //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); //To i nacrtamo
-        //glDrawArrays(tip primitive, indeks pocetnog tjemena, koliko narednih tjemena crtamo);
-        glUniform4f(uColLoc, 0.5f, 0.0f, 0.5f, 1.0f);
-
-        //Crtanje sa indeksima
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(0 * sizeof(unsigned int)));
-        //glDrawElements(Tip primitive, koliko indeksa se koristi, koji su tip indeksi, pomjeraj sa pocetka niza indeksa da bi dosli do prvog indeksa koji koristimo
-
+    
         glfwSwapBuffers(window);
 
         glfwPollEvents();
@@ -146,8 +154,8 @@ int main(void)
 
 
 
-    glDeleteBuffers(1, &VBO);
-    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(2, VBO);
+    glDeleteVertexArrays(2, VAO);
     glDeleteProgram(unifiedShader);
 
     glfwTerminate();
