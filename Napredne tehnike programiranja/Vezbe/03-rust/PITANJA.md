@@ -147,24 +147,24 @@
 
     ```rust
     fn main() {
-      let s = String::from("hello");  // s comes into scope
+    let s = String::from("hello");  // s comes into scope
 
-      takes_ownership(s);             
-      println!("{}", s);
+    takes_ownership(&s);             
+    println!("{}", s);
 
-      let x = 5;                      
+    let x = 5;                      
 
-      makes_copy(x);   
-      
-      println!("{}", x)
-    } 
+    makes_copy(x);   
+    
+    println!("{}", x)
+  } 
 
-    fn takes_ownership(some_string: String) {
-        println!("{}", some_string);
-    } 
-    fn makes_copy(some_integer: i32) {
-        println!("{}", some_integer);
-    }
+  fn takes_ownership(some_string: &String) {
+      println!("{}", some_string);
+  } 
+  fn makes_copy(some_integer: i32) {
+      println!("{}", some_integer);
+  }
     ```
 
 34. Odredi rezultat izvršavanja sledećeg koda:

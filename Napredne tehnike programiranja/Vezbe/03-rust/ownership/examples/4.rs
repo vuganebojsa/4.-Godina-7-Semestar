@@ -7,6 +7,6 @@ fn main() {
 fn give_ownership() -> String {
     let s = String::from("hello, world");
     // Convert String to Vec
-    let _s = s.into_bytes();
+    let _s = s.clone().into_bytes();
     s
 }

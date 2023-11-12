@@ -6,6 +6,6 @@ fn main() {
     println!("{}", s2);
 }
 
-fn take_ownership(s: String) {
-    println!("{}", s);
+fn take_ownership(s: String) -> String {
+    s
 }
