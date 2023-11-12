@@ -51,7 +51,6 @@ def get_ditto_count(img):
 
     lower_bound, upper_bound = get_mask_bounds()
     mask = cv2.inRange(hsv, lower_bound, upper_bound)
-
     # filter contours that fit a certain area
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     filtered_contours = get_filtered_contours(contours)
