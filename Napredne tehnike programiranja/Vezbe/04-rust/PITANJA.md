@@ -15,8 +15,8 @@
     fn build_user(email: String, username: String) -> User {
         User {
             active: true,
-            username: username,
-            email: email,
+            username,
+            email,
             sign_in_count: 1,
         }
     }
@@ -31,6 +31,12 @@
           email: String::from("another@example.com"),
           sign_in_count: user1.sign_in_count,
     };
+
+    let user2 = User {
+        email: String::from("another@example.com"),
+        ..user1
+  };
+  Ne moze se koristiti nakon user2 jer se vrednost od usera pozajmi u user2. Da smo mu pozajmili samo active i sign_incount ne bi bilo problema jer implementiraju copy tip.
     ```
 
 3. Da li su `black` i `origin` isti tip?
@@ -43,6 +49,7 @@
         let black = Color(0, 0, 0);
         let origin = Point(0, 0, 0);
     }
+    Jesu isti tip jer su obe tuple, ali su razlicite strukture.
     ```
 
 4. Da li je naredni isečak koda ispravan?
@@ -53,16 +60,56 @@
     fn main() {
         let subject = AlwaysEqual;
     }
+    Jeste ispravan, to je unit struct sto znaci da nema polja.
+    Ovo se koristi kad nam je prisutnost tipa bitnija nego sama vrednost te instance tipa.
     ```
 
 5. Kreiraj strukturu `Rectangle` sa dva polja: `height` i `weight`. Nakon toga, kreiraj funkciju koja izračunava površinu pravougaonika na osnovu instance pravougaonika. Ispisati instancu strukture `Rectangle` upotrebom #[derive] atributa.
+    - 
+    #[derive(Debug)]
+    struct Rectangle{
+        width: u32,
+        height: u32
+    }
+    impl Rectangle{
+        fn area(&self) -> u32{
+            self.width * self.height
+        }
+    }
+    fn main(){
+        let rect = Rectangle{
+            width:30,
+            height:30
+        };
+        println!("{:?}", rect.area());
+    }
+    
 6. Implementiraj gorenavedeni zadatak upotrebom metode umesto asocirane funkcije.
+    - fn area(rectangle: &Rectangle) -> u32{
+        rectangle.width * rectangle.height
+    }
 7. Nad kojim sve tipovima se može definisati metoda?
+    - Nad strukturama, enumeracijama, osnovne tipove podataka, reference, mutable reference
 8. Koja je razlika između `self` i `Self`?
+    - self se koristi unutar metode da oznaci instancu nad kojom se ta metoda poziva, to je ref na trenutni objekat ili instancu. Self se koristi kao tip za oznacavanje povratnog tipa metode ili asocij funkcije koja se poziva na tip, a ne na instancu.
 9. Da li metoda uzima vlasništvo nad `self`?
+    - Podrazumevano uzimaju pozamljene reference nad self, sto znaci da ne preuzimaju vlasnistvo. To se cesto naziva pozajmljivanje &self ili &mut self
 10. Kada bi metoda trebala da uzme vlasništvo nad `self`?
+    - Kada zelimo da prenesemo vlasnistvo nad resursima koje instanca poseduje. U prevodu kad iskoristimo neku metodu ne zelimo da to sto smo preneli od objekta dalje koristimo.
+    fn consume(self) -> ...{
+        self.neka_vred
+    }
 11. Implementiraj asociranu funkciju nad `Rectangle` koja se zove `square` i koja kreira instancu `Rectangle` koja predstavlja kvadrat (dimenzije obe stranice su iste). Primer upotrebe funkcije je: `let sq = Rectangle::square(3)`;
+impl Rect{
+    fn square(size: u32) -> Self{
+        Self{
+            width:size,
+            height:size
+        }
+    }
+}
 12. Da li struktura može da ima više `impl` blokova?
+    - Moze
 13. Šta predstavljaju enumeracije u Rust-u?
 14. Pojednostavi sledeći primer upotrebom samo enumeracije:
 
