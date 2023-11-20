@@ -1,5 +1,5 @@
 //Popuni prazninu kako bi se struktura mogla ispisati na ekran.
-#[__]
+#[derive(Debug)]
 struct Rectangle {
     width: u32,
     height: u32,
@@ -14,5 +14,5 @@ fn main() {
 
     dbg!(&rect1); // Ispiši debug info
 
-    println!(__, rect1); // Ispiši debug info na stdout
+    println!("{:?}", rect1); // Ispiši debug info na stdout
 }

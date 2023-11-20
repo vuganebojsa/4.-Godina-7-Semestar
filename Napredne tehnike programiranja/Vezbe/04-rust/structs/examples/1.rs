@@ -9,6 +9,7 @@ fn main() {
     let p = Person {
         name: String::from("student"),
         age,
+        hobby: String::from("student")
     };
 
     println!("Success!");
