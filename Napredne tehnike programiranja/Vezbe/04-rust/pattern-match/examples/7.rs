@@ -18,7 +18,7 @@ fn main() {
         ref r => println!("Got a reference to a value: {:?}", r),
     }
     match mut_value {
-        ___ => {
+        ref mut m => {
             *m += 10;
             println!("We added 10. `mut_value`: {:?}", m);
         },

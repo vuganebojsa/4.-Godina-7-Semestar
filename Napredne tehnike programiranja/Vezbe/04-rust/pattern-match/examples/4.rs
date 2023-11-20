@@ -6,7 +6,7 @@ enum Message {
 fn main() {
     let a = Message::Write(String::from("This is a message"));
 
-    __ {
+    if let Message::Write(i) = a {
         println!("message holds the value: {}", i);
 
         println!("Success!");

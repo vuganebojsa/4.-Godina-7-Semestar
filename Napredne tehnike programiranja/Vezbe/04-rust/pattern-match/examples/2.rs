@@ -22,14 +22,15 @@ fn main() {
 
 fn show_message(msg: Message) {
     match msg {
-        __ => { // match  Message::Move
-            assert_eq!(a, 1);
-            assert_eq!(b, 3);
+        Message::Move{x, y}=> { // match  Message::Move
+            assert_eq!(x, 1);
+            assert_eq!(y, 3);
         },
-        Message::ChangeColor(_, g, b) => {
-            assert_eq!(g, __);
-            assert_eq!(b, __);
+        Message::ChangeColor(r, g, b) => {
+            assert_eq!(r, 255);
+            assert_eq!(g, 255);
+            assert_eq!(b, 0);
         }
-        __ => println!("no data in these variants")
+        other => println!("no data in these variants")
     }
 }
