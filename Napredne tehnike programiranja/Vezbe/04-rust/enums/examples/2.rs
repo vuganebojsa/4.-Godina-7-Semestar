@@ -9,8 +9,9 @@ enum Message {
 fn main() {
     let msg = Message::Move{x: 1, y: 2};
 
-    if let Message::Move{__} = msg {
-        assert_eq!(a, b);
+    if let Message::Move{x, y} = msg {
+        assert_eq!(x, 1);
+        assert_eq!(y, 2);
     } else {
         panic!("Ne dozvoli da se ova sekcija izvrši！");
     }

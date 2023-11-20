@@ -7,8 +7,8 @@ enum Message {
 }
 
 fn main() {
-    let msg1 = Message::Move{__}; // Instancirati sa  x = 1, y = 2 
-    let msg2 = Message::Write(__); // Instancirati sa "zdravo, svete!"
+    let msg1 = Message::Move{x: 1, y: 2}; // Instancirati sa  x = 1, y = 2 
+    let msg2 = Message::Write(String::from("zdravo, svete!")); // Instancirati sa "zdravo, svete!"
 
     println!("Success!");
 } 

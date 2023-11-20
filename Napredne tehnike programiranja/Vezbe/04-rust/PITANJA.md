@@ -111,29 +111,21 @@ impl Rect{
 12. Da li struktura može da ima više `impl` blokova?
     - Moze
 13. Šta predstavljaju enumeracije u Rust-u?
+    - numeracije u Rust-u predstavljaju tip podataka koji može imati više različitih vrednosti, gde svaka vrednost ima svoje ime (etiketu). Enumeracije su korisne kada želite da reprezentujete diskretne setove mogućih vrednosti.
+
+    U Rust-u, enumeracije se definišu pomoću ključne reči enum. Svaka vrednost u enumeraciji se naziva "varijanta" (varianta). Enumeracije omogućavaju kreiranje tipova koji mogu biti jedna od više različitih stvari.
 14. Pojednostavi sledeći primer upotrebom samo enumeracije:
 
     ```rust
     fn main() {
-      enum IpAddrKind {
-          V4,
-          V6,
+      enum IpAddr {
+          V4(String),
+          V6(String),
       }
 
-      struct IpAddr {
-          kind: IpAddrKind,
-          address: String,
-      }
+      let home = IpAddr::V4(String::from("127.0.0.1"));
 
-      let home = IpAddr {
-          kind: IpAddrKind::V4,
-          address: String::from("127.0.0.1"),
-      };
-
-      let loopback = IpAddr {
-          kind: IpAddrKind::V6,
-          address: String::from("::1"),
-      };
+      let loopback = IpAddr::v6(String::from("::1"));
     }
     ```
 
@@ -150,18 +142,40 @@ impl Rect{
 
       let loopback = IpAddr::V6(String::from("::1"));
     }
+    Ne
     ```
 
 16. Da li Rust ima koncept `null` vrednosti?
+    - Nema. Umesto null, Rust koristi sistem opcija (Option), gde vrednost može biti ili Some(vrednost) ili None. Ovaj pristup 
 17. Ispravi grešku u sledećem kodu:
 
     ```rust
     fn main() {
-      let _absent_number = None;
+      let _absent_number : Option<i32> = None;
     }
+    dodato je Option<i32>
     ```
 
 18. Koje su prednosti upotrebe `Option<T>` umesto `null`?
+    - Upotreba `Option<T>` umesto `null` donosi nekoliko ključnih prednosti u Rust-u:
+
+        1. **Bezbednost i Odbacivanje Dereferenciranja Null Pokazivača:**
+        - U Rust-u, null pokazivači i referenciranje null nisu dozvoljeni. Ovo eliminiše mnoge uobičajene greške koje se javljaju u drugim jezicima vezane za referencu na null.
+        - Kada koristite `Option<T>`, nemate rizik od dereferenciranja null pokazivača, jer je `Option` eksplicitan u vezi sa prisustvom ili odsustvom vrednosti.
+
+        2. **Sigurno i Eksplicitno Rukovanje Odsutnim Vrednostima:**
+        - Rust forsira programera da eksplicitno rukuje opcionalnim vrednostima pomoću `match`, `if let` ili `unwrap` (koji izaziva panic ako je vrednost `None`). Ovo doprinosi jasnoći i bezbednosti koda.
+
+        3. **Prevencija Grešaka Vezanih za Null:**
+        - Korišćenjem `Option<T>`, programeri su svesni da vrednost može biti odsutna i prisiljeni su na rukovanje ovim slučajem. Ovo smanjuje mogućnost grešaka koje proizlaze iz neočekivane odsutnosti vrednosti.
+
+        4. **Eliminacija Potrebe za Proverama na Null:**
+        - Programeri ne moraju konstantno proveravati vrednosti na null pre nego što ih koriste. Rust vas podstiče da eksplicitno rukujete opcionalnim vrednostima tamo gde je to potrebno.
+
+        5. **Jasnoća u API-ju:**
+        - Kada funkcija može vratiti vrednost ili biti odsutna, upotreba `Option<T>` jasno ukazuje na tu mogućnost u definiciji funkcije, što čini API-je jasnijim.
+
+        U globalu, upotreba `Option<T>` doprinosi bezbednosti, jasnoći i eliminaciji mnogih potencijalnih grešaka vezanih za null vrednosti. Rust promoviše dizajn koji minimizuje nesigurnost u radu sa vrednostima koje mogu nedostajati.
 19. Šta je rezultat izvršavanja sledećeg koda?
 
     ```rust
@@ -194,6 +208,7 @@ impl Rect{
     fn main() {
         value_in_cents(Coin::Quarter(UsState::Alaska));
     }
+    - State quarter from alaska!
     ```
 
 20. Šta je rezultat izvršavanja sledećeg koda?
@@ -213,6 +228,7 @@ impl Rect{
       
       println!("five: {:#?}, six: {:#?}, none: {:#?}", five, six, none)
     }
+    5, 6, None
     ```
 
 21. Šta je rezultat izvršavanja sledećeg koda?
@@ -231,6 +247,7 @@ impl Rect{
       
       println!("five: {:#?}, six: {:#?}, none: {:#?}", five, six, none)
     }
+    Error, jer none nije pokriven
     ```
 
 22. Ispravi grešku u sledećem kodu:
@@ -241,6 +258,7 @@ impl Rect{
       match dice_roll {
           3 => add_fancy_hat(),
           7 => remove_fancy_hat(),
+          other => println!("Other") // ovo je dodato
       }
 
       fn add_fancy_hat() {}
@@ -252,15 +270,19 @@ impl Rect{
 
     ```rust
     fn main() {
-      let config_max = Some(3u8);
-      match config_max {
-          Some(max) => println!("The maximum is configured to be {}", max),
-          _ => (),
-      }
+    let config_max = Some(3u8);
+    if let Some(max) = config_max {
+        println!("The maximum is configured to be {}", max);
+    }else{
+        println!("Ez");
     }
+  }
     ```
 
 24. Koja je razlika `if let` u odnosu na `match`?
+    - if let se obično koristi kada želite proveriti samo jedan uzorak (pattern) i izvršiti određenu akciju ako taj uzorak odgovara vrednosti. To je kraće i jednostavnije od match kada imate samo jedan slučaj za rukovanje.
+    Match je moćniji kada imate više slučajeva koje želite rukovati. Možete definisati različite blokove koda za različite uzorke.
+
 25. Iskoristi `if let` umesto `match` izraza u sledećem primeru:
 
     ```rust
@@ -284,6 +306,19 @@ impl Rect{
         match coin {
             Coin::Quarter(state) => println!("State quarter from {:?}!", state),
             _ => count += 1,
+        }
+        println!("The count is: {}", count)
+    }
+
+    // Resenje
+        fn main() {
+        let coin = Coin::Penny;
+        let mut count = 0;
+        if let Coin::Quarter(state) = coin {
+            println!("State quarter from {:?}!", state);
+            
+        }else{
+            count += 1;
         }
         println!("The count is: {}", count)
     }
