@@ -8,16 +8,16 @@ fn main() {
     // `entry` unosi ključ jedino ukoliko već ne postoji
     player_stats.entry("health").or_insert(100);
 
-    assert_eq!(player_stats["health"], __);
+    assert_eq!(player_stats["health"], 100);
 
     // `or_insert_with`, za razliku od `or_insert` može biti i funkcija sa novom vrednošću
     player_stats.entry("health").or_insert_with(random_stat_buff);
-    assert_eq!(player_stats["health"], __);
+    assert_eq!(player_stats["health"], 100);
 
     let health = player_stats.entry("health").or_insert(50);
-    assert_eq!(health, __);
+    assert_eq!(*health, 100);
     *health -= 50;
-    assert_eq!(*health, __);
+    assert_eq!(*health, 50);
 
     println!("Success!");
 }
