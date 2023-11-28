@@ -24,7 +24,7 @@ impl Planet {
     }
 }
 
-#[test]
+
 fn main() {
     let sun = Rc::new(Sun {});
     println!("reference count = {}", Rc::strong_count(&sun)); // 1 referenca
@@ -50,17 +50,17 @@ fn main() {
     jupiter.details();
 
     // TODO
-    let saturn = Planet::Saturn(Rc::new(Sun {}));
+    let saturn = Planet::Saturn(Rc::clone(&sun));
     println!("reference count = {}", Rc::strong_count(&sun)); // 7 referenci
     saturn.details();
 
     // TODO
-    let uranus = Planet::Uranus(Rc::new(Sun {}));
+    let uranus = Planet::Uranus(Rc::clone(&sun));
     println!("reference count = {}", Rc::strong_count(&sun)); // 8 referenci
     uranus.details();
 
     // TODO
-    let neptune = Planet::Neptune(Rc::new(Sun {}));
+    let neptune = Planet::Neptune(Rc::clone(&sun));
     println!("reference count = {}", Rc::strong_count(&sun)); // 9 referenci
     neptune.details();
 
@@ -81,12 +81,15 @@ fn main() {
     drop(mars);
     println!("reference count = {}", Rc::strong_count(&sun)); // 4 reference
 
+    drop(earth);
     // TODO
     println!("reference count = {}", Rc::strong_count(&sun)); // 3 reference
 
+    drop(venus);
     // TODO
     println!("reference count = {}", Rc::strong_count(&sun)); // 2 reference
 
+    drop(mercury);
     // TODO
     println!("reference count = {}", Rc::strong_count(&sun)); // 1 reference
 

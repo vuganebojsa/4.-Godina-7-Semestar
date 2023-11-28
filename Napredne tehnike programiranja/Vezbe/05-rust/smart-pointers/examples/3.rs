@@ -15,6 +15,5 @@ struct CustomSmartPointer {
           data: String::from("some data"),
       };
       println!("CustomSmartPointer created.");
-      c.drop();
       println!("CustomSmartPointer dropped before the end of main.");
   }

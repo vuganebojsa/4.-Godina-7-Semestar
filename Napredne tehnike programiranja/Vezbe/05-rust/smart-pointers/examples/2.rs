@@ -1,5 +1,5 @@
 //Ispravi grešku u kodu implementiranjem `Deref` osobine za `MyBox` strukturu.
-
+use std::ops::Deref;
 struct MyBox<T>(T);
 
 impl<T> MyBox<T> {
@@ -8,7 +8,12 @@ impl<T> MyBox<T> {
   }
 }
 
-
+impl<T> Deref for MyBox<T>{
+  type Target = T;
+  fn deref(&self) -> &Self::Target{
+    &self.0
+  }
+}
 fn main() {
     let x = 5;
     let y = MyBox::new(x);
