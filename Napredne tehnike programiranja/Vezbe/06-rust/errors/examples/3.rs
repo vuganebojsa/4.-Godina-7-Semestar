@@ -18,7 +18,10 @@ fn multiply(n1_str: &str, n2_str: &str) -> Result<i32, ParseIntError> {
 // Prepiši `multiply` da bude kraći i jednostavniji
 // Trebali bismo da koristimo `and_then` i `map` ovde.
 fn multiply1(n1_str: &str, n2_str: &str) -> Result<i32, ParseIntError> {
-    // IMPLEMENT...
+    match n1_str.parse::<i32>(){
+        Ok(n1) => n2_str.parse::<i32>().map(|n2| n1 * n2),
+        Err(e) => Err(e)
+    }
 }
 
 fn print(result: Result<i32, ParseIntError>) {
