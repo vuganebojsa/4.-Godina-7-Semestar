@@ -15,7 +15,7 @@ pub struct Tweet {
     pub retweet: bool,
 }
 
-impl __ for Tweet {
+impl Summary for Tweet {
     fn summarize_author(&self) -> String {
         format!("@{}", self.username)
     }
@@ -41,7 +41,7 @@ pub struct NewsArticle {
     pub published_date: String,
 }
 
-impl __ for NewsArticle {
+impl Summary for NewsArticle {
     fn summarize_author(&self) -> String {
         format!("@{}", self.author)
     }
