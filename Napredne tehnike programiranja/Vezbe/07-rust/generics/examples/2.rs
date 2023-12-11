@@ -2,12 +2,12 @@
 // Napravi Val generičnim da bi kod radio.
 // Ne menjaj main
 
-struct Val {
-    val: f64,
+struct Val<T> {
+    val: T,
 }
 
-impl Val {
-    fn value(&self) -> &f64 {
+impl<T> Val<T> {
+    fn value(&self) -> &T {
         &self.val
     }
 }

@@ -12,6 +12,6 @@ impl Point<f32> {
 }
 
 fn main() {
-    let p = Point{x: 5, y: 10};
+    let p = Point{x: 5.0, y: 10.0};
     println!("{}",p.distance_from_origin());
 }
