@@ -5,8 +5,8 @@ use std::rc::{Rc, Weak};
 #[derive(Debug)]
 struct Node {
     value: i32,
-    parent: RefCell<_____>,
-    children: RefCell<Vec<_____>>,
+    parent: RefCell<Weak<Node>>,
+    children: RefCell<Vec<Rc<Node>>>,
 }
 
 fn main() {

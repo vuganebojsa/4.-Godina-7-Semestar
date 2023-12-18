@@ -1,7 +1,7 @@
 // Dodaj `RefCell` u `Cons` listi tako da podržava modifikaciju vrednosti u čvoru.
 #[derive(Debug)]
 enum List {
-    Cons(________, Rc<List>),
+    Cons(Rc<RefCell<i32>>, Rc<List>),
     Nil,
 }
 

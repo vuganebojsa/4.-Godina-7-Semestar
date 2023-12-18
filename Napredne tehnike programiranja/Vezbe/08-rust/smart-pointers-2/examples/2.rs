@@ -4,16 +4,16 @@
 // https://doc.rust-lang.org/book/ch15-06-reference-cycles.html
 use crate::List::{Cons, Nil};
 use std::cell::RefCell;
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
 
 #[derive(Debug)]
 enum List {
-    Cons(i32, RefCell<Rc<List>>),
+    Cons(i32, RefCell<Option<Rc<List>>>),
     Nil,
 }
 
 impl List {
-    fn tail(&self) -> Option<&RefCell<Rc<List>>> {
+    fn tail(&self) -> Option<&RefCell<Option<Rc<List>>>> {
         match self {
             Cons(_, item) => Some(item),
             Nil => None,
