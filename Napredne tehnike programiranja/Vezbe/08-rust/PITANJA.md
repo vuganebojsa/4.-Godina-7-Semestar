@@ -3,8 +3,16 @@
 ## Pametni pointeri (drugi deo), FP, iteratori i zatvorenja
 
 1. Šta predstavlja obrazac interne promenjivosti?
+    - RefCell<T>
+    - Дизајн образац за измену података чак и када постоје дељене референце.
+    Ово је забрањено правилима позајмљивања.
+    Интерно користи несигуран кôд (unsafe) чиме се ставља до знања компајлеру да се провера обавља од стране RefCell<T> типа.
+    Провера се сели из времена компајлирања у време извршавања (run-time)
 2. Koja je razlika između `Box<T>` i `RefCell<T>`?
+    - Код Box<T> правила позајмљивања се проверавају у време компајлирања (статички). Ако прекршимо правила кôд се неће компајлирати.
+    Код RefCell<T> правила позајмљивања се проверавају у време извршавања. Ако прекршимо правила програм ће прекинути са извршавањем (panic).
 3. U kojoj situaciji je potrebno da se pravila pozajmljivanja proveravaju u vreme izvršavanja programa umesto u vreme kompajliranja?
+    - RefCell<T> користимо у ситуацијама када знамо да је наш програм валидан али Раст компајлер то није у стању да верификује статички.
 4. Izmeni sledeći kod upotrebom `RefCell<T>` tako da se testovi uspešno izvrše:
 
     ```rust
@@ -80,6 +88,83 @@
             assert_eq!(mock_messenger.sent_messages.len(), 1);
         }
     }
+    ```
+    ```rust
+        // solution
+        pub trait Messenger {
+    fn send(&self, msg: &str);
+    }
+
+    pub struct LimitTracker<'a, T: Messenger> {
+        messenger: &'a T,
+        value: usize,
+        max: usize,
+    }
+
+    impl<'a, T> LimitTracker<'a, T>
+    where
+        T: Messenger,
+    {
+        pub fn new(messenger: &'a T, max: usize) -> LimitTracker<'a, T> {
+            LimitTracker {
+                messenger,
+                value: 0,
+                max,
+            }
+        }
+
+        pub fn set_value(&mut self, value: usize) {
+            self.value = value;
+
+            let percentage_of_max = self.value as f64 / self.max as f64;
+
+            if percentage_of_max >= 1.0 {
+                self.messenger.send("Error: You are over your quota!");
+            } else if percentage_of_max >= 0.9 {
+                self.messenger
+                    .send("Urgent warning: You've used up over 90% of your quota!");
+            } else if percentage_of_max >= 0.75 {
+                self.messenger
+                    .send("Warning: You've used up over 75% of your quota!");
+            }
+        }
+    }
+
+
+    #[cfg(test)]
+    mod tests {
+        use std::cell::RefCell;
+        use super::*;
+
+        struct MockMessenger {
+            sent_messages: RefCell<Vec<String>>,
+        }
+
+        impl MockMessenger {
+            fn new() -> MockMessenger {
+                MockMessenger {
+                    sent_messages: RefCell::new(vec![]),
+                }
+            }
+        }
+
+        impl Messenger for MockMessenger {
+            fn send(&self, message: &str) {
+                self.sent_messages.borrow_mut().push(String::from(message));
+            }
+        }
+
+        #[test]
+        fn it_sends_an_over_75_percent_warning_message() {
+            let mock_messenger = MockMessenger::new();
+            let mut limit_tracker = LimitTracker::new(&mock_messenger, 100);
+
+            limit_tracker.set_value(80);
+
+            assert_eq!(mock_messenger.sent_messages.borrow().len(), 1);
+        }
+    }
+
     ```
 
 5. Da li sledeći kod proizvodi grešku? Zašto?
@@ -163,12 +248,18 @@
         }
     }
     ```
+    - Proizvodi je i to u funkciji send jer refcell omogucava samo jednog vlasnika. A u njoj pokusavamo da imamo 2.
 
 6. Ispravi grešku u sledećem kodu:
 
     ```rust
     fn main() {
         let add_one_v4 = |x|  x + 1;
+    }
+
+    // solution
+    fn main() {
+        let add_one_v4 = |x: u32| -> u32  {x + 1};
     }
     ```
 
@@ -182,6 +273,8 @@
         let n = example_closure(5);
     }
     ```
+
+    - Da, ovaj kod će proizvesti grešku. Razlog tome je što Rust inferiše tipove za zatvarajuće funkcije (closures) na osnovu prvog puta kada se koriste. U ovom slučaju, prvi put kada se example_closure koristi, pretpostavljeni tip parametra x postaje tip String, 
 
 8. Da li sledeći kod proizvodi grešku? Zašto?
 
@@ -197,6 +290,7 @@
         println!("After calling closure: {:?}", list);
     }
     ```
+    - Ne proizvodi gresku jer zatvarajuca funkcija koristi samo nepromenljive reference na vlasnika list a ne mutabilne.
 
 9. Da li sledeći kod proizvodi grešku? Zašto?
 
@@ -211,6 +305,7 @@
         println!("After calling closure: {:?}", list);
     }
     ```
+    - Hoce jer imamo i promenljive i nepromenljive reference.
 
 10. Ispravi grešku u sledećem kodu:
 
@@ -222,6 +317,10 @@
         println!("Before defining closure: {:?}", list);
 
         thread::spawn(|| println!("From thread: {:?}", list))
+            .join()
+            .unwrap();
+        // resenje
+         thread::spawn(move || println!("From thread: {:?}", list))
             .join()
             .unwrap();
     }
