@@ -14,9 +14,8 @@ fn main() {
 
 
     let _reborrow = &count; 
-
     inc();
-
+    
     // Nakon zadnjeg poziva funkcije `inc`, zatvorenje više ne mora da radi &mut count pozajmicu. 
     // Prema tome, moguće je ponovo pozajmiti bez greške
     let _count_reborrowed = &mut count; 

@@ -4,9 +4,9 @@ fn main() {
 
     let v1_iter = v1.iter();
 
-    let total = v1_iter.sum();
+    let total: i32 = v1_iter.sum();
 
-    assert_eq!(total, ___);
+    assert_eq!(total, 6);
 
-    println!("{:?}, {:?}",v1, v1_iter);
+    println!("{:?}",v1);
 }
