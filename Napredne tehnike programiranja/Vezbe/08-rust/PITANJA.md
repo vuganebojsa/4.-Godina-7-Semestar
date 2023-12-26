@@ -327,7 +327,12 @@
     ```
 
 11. U zavisnosti od zapamćene vrednosti u zatvorenju, koje tri `Fn` osobine zatvorenje može da implementira?
+    - 
+    1. FnOnce - затворења која могу да се позову једном. Сва затворења имплементирају бар ову особину, пошто могу да се позову бар једном. Затворења која предају власништво запамћене вредности приликом позива имплементрају само ову особину пошто се не могу позвати више од једном.
+    2. FnMut - затворења која не премештају вредности али их могу мењати. Могу се позвати више од једном.
+    3. Fn - затворења која нити премештају нити мењају своје окружење, или не памте ништа из окружења. Могу се позвати више пута.
 12. Koju `Fn` osobinu implementiraju svi tipovi zatvorenja?
+    - FnOnce
 13. Da li sledeći kod proizvodi grešku? Zašto?
 
     ```rust
@@ -353,6 +358,7 @@
         });
         println!("{:#?}", list);
     }
+    - Proizvesce gresku zato sto imamo zatvorenje koje radi premestanje iz okruzenja i time je FnOnce.
     ```
 
 14. Da li sledeći kod proizvodi grešku? Zašto?
@@ -378,10 +384,13 @@
         });
         println!("{:#?}, sorted in {num_sort_operations} operations", list);
     }
+    -Nece jer je sada zatvorenje FnMut
     ```
 
 15. Da li su iteratori "lenji" u Rust-u?
+    - Итератори у Расту су "лењи", односно процесирање ће се одложити и обавити тек онда када је то заиста потребно.
 16. Šta predstavlja `Iterator` osobina?
+    - Ова особина има придружени тип (associated type) - type Item односно Self::Item. Стога, имплементација ове особине над неким типом захтева дефиницију и придруженог типа који представља тип елемената над којима се врши итерација.
 17. Ispravi grešku u sledećem kodu:
 
     ```rust
@@ -389,6 +398,9 @@
         let v1 = vec![1, 2, 3];
 
         let v1_iter = v1.iter();
+        //resenje
+        let mut v1_iter = v1.iter();
+        //
 
         assert_eq!(v1_iter.next(), Some(&1));
         assert_eq!(v1_iter.next(), Some(&2));
@@ -404,13 +416,23 @@
         let v1 = vec![1, 2, 3];
 
         let mut v1_iter = v1.iter();
+        
+        let mut first = v1_iter.next().unwrap();
+        first += 1;
+    }
+    // solution 
+    fn main() {
+        let v1 = vec![1, 2, 3];
 
+        let mut v1_iter = v1.iter();
+        
         let mut first = v1_iter.next().unwrap();
         first += 1;
     }
     ```
-
+    
 19. Šta su konzumirajući adapteri (Engl. consuming adapters)?
+    - To su metode koje vrse konzumaciju iteratora(next metodom).
 20. Da li sledeći kod proizvodi grešku? Zašto?
 
     ```rust
@@ -425,15 +447,20 @@
         
         let give_me_next_pls = v1_iter.next();
     }
+    
     ```
-
+    - - Proizvodi jer je sum metoda konzumirajuca pa posle poziva sum metode vise nismo u stanju da pozovemo v1_iter jer smo ga konzumirali.
 21. Šta su iterator adapteri (Engl. iterator adapters)?
+    - To su metode koje proizvode druge iteratore i vrse konverziju jednog iteratora u neki drugi
+    npr: v1.iter().map(|x| x + 1);
 22. Ispravi grešku u sledećem kodu:
 
 ```rust
     fn main() {
         let v1: Vec<i32> = vec![1, 2, 3];
         let v2 = v1.iter().map(|x| x + 1).collect();
+        // resenje
+        let v2: Vec<i32> = ...;
         assert_eq!(v2, vec![2, 3, 4]);
     }
 ```
@@ -449,6 +476,9 @@
 
     fn shoes_in_size(shoes: Vec<Shoe>, shoe_size: u32) -> Vec<Shoe> {
         shoes.iter().filter(|s| s.size == shoe_size).collect()
+        // resenje
+        shoes.into_iter().filter(|s| s.size == shoe_size).collect()
+
     }
 
     #[cfg(test)]
@@ -492,6 +522,7 @@
     ```
 
 24. Pri dodeli drugoj varijabli, da li Rust podrazumevano obavlja kopiranje (`Copy`) varijable?
+    - Rust podrazumevano obavlja kopiranje (Copy) varijabli prilikom dodele samo za tipove koji implementiraju Copy trait. Tipovi koji implementiraju Copy su obično jednostavni tipovi podataka poput celih brojeva (i32, u64), karakteri (char), boolean vrednosti (bool), i slično.
 25. Da li sledeći kod proizvodi grešku? Zašto?
 
     ```rust
@@ -505,6 +536,7 @@
         println!("{x}, {y}");
     }
     ```
+    - Ne prozivodi jer je x prost tip pa kopiranje nije problem.
 
 26. Napiši koncizniji kod umesto sledećeg koda upotrebom iterator adaptera i `filter` metode.
 
@@ -519,5 +551,12 @@
         }
 
         results
+    }
+    // solution
+    pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+        contents
+        .lines()
+        .filter(|line| line.contains(query))
+        .collect()
     }
     ```
